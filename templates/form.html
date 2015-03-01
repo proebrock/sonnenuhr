@@ -1,0 +1,41 @@
+<html>
+    <head>
+        <title>Sonnenuhr</title>
+        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+    </head>
+    <body>
+        <div id="container">
+            <div class="title">
+                <h1>Sonnenuhr</h1>
+            </div>
+            <div id="content">
+				<label for="_status">Current status</label><br/>
+				<input type="text" name="_status" value="{{status}}" readonly></input>
+            </div>
+            <div id="content">
+                <form method="post" action="{{ url_for('post') }}">
+                  <input type="submit" name="_submitButton" value="Off"/>
+                  <input type="submit" name="_submitButton" value="30%"/>
+                  <input type="submit" name="_submitButton" value="70%"/>
+                  <input type="submit" name="_submitButton" value="Full"/><br/>
+
+				  <hr/>
+
+				  <label for="_alarmEnabled">Enable Alarm</label>
+                  <input type="checkbox" name="_alarmEnabled" value="edit" {{alarmEnabled}}/>
+				  <label for="_musicEnabled">Enable Music</label>
+                  <input type="checkbox" name="_musicEnabled" value="edit" {{musicEnabled}}/><br/>
+
+				  <label for="_wakeupTime">Wakeup Time [HH:MM]</label>
+				  <input type="text" name="_wakeupTime" value="{{wakeupTime}}"></input>
+
+				  <label for="_fadeDuration">Fade Duration [min]</label>
+				  <input type="text" name="_fadeDuration" value="{{fadeDuration}}"></input><br/>
+
+                  <input type="submit" name="_submitButton" value="Save Alarm Settings"/>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>
+ 
