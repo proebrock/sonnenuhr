@@ -1,6 +1,38 @@
+import subprocess
+import shlex
 import flask
 import os
 import datetime
+
+
+
+def RunShell(commandLine):
+	command = shlex.split(commandLine)
+	process = subprocess.Popen(command, shell=False, \
+		stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+	out, err = process.communicate()
+	return process.returncode, out, err
+
+
+
+class PwmOutput:
+	def __init__(self, dummyMode=False):
+		self.dummyMode = dummyMode
+		if not self.dummyMode:
+			RunShell('gpio unexport 1')
+			RunShell('gpio mode 1 pwm')
+			RunShell('gpio pwm-ms')
+			# Base frequency 19.200.000Hz / 96 / 1000 = 200Hz
+			RunShell('gpio pwmr 1000')
+			RunShell('gpio pwmc 96')
+	
+	def SetDutyCycle(self, dutyCycle):
+		if self.dummyMode:
+			print('Setting duty cycle to {0}'.format(dutyCycle))
+		else:
+			RunShell('gpio pwm 1 {0}'.format( \
+				int(round(1000.0 * dutyCycle))))
+
 
 
 
@@ -12,6 +44,7 @@ class FormData:
 		self.wakeupTime = datetime.datetime.now().time()
 		self.fadeDuration = 20
 		self.setButtons = { 'Off' : 0.0, '30%' : 0.3, '70%' : 0.7, 'Full' : 1.0 }
+		self.output = PwmOutput()
 	
 	def __str__(self):
 		result = 'dutyCycle={0}%, alarmEnabled={1}'.format( \
@@ -25,6 +58,8 @@ class FormData:
 		buttonLabel = flask.request.form['_submitButton']
 		if buttonLabel in self.setButtons.keys():
 			self.dutyCycle = self.setButtons[buttonLabel]
+			self.output.SetDutyCycle(self.dutyCycle)
+
 		elif buttonLabel == 'Save Alarm Settings':
 			self.alarmEnabled = len(flask.request.form.getlist('_alarmEnabled')) > 0
 			self.musicEnabled = len(flask.request.form.getlist('_musicEnabled')) > 0
