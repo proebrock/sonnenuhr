@@ -43,7 +43,7 @@ class FormData:
 		self.musicEnabled = False
 		self.wakeupTime = datetime.datetime.now().time()
 		self.fadeDuration = 20
-		self.setButtons = { 'Off' : 0.0, '30%' : 0.3, '70%' : 0.7, 'Full' : 1.0 }
+		self.setButtons = { 'Off' : 0.0, '10%' : 0.1, '60%' : 0.6, 'Full' : 1.0 }
 		self.output = PwmOutput()
 	
 	def __str__(self):
