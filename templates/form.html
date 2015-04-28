@@ -7,16 +7,12 @@
     <body>
         <div id="container">
             <div class="title">
-                <h1>Sonnenuhr</h1>
-            </div>
-            <div id="content">
-				<label for="_status">Current status</label><br/>
-				<input type="text" name="_status" value="{{status}}" readonly></input>
+                <h1>Sonnenuhr - {{status}}</h1>
             </div>
             <div id="content">
                 <form method="post" action="{{ url_for('post') }}">
                   <input type="submit" name="_submitButton" value="Off"/>
-                  <input type="submit" name="_submitButton" value="10%"/>
+                  <input type="submit" name="_submitButton" value="1%"/>
                   <input type="submit" name="_submitButton" value="60%"/>
                   <input type="submit" name="_submitButton" value="Full"/><br/>
 

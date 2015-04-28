@@ -10,6 +10,7 @@ import time
 
 
 def RunShell(commandLine):
+	#print(commandLine)
 	command = shlex.split(commandLine)
 	process = subprocess.Popen(command, shell=False, \
 		stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -52,7 +53,7 @@ class AlarmClock:
 		self.startSec = 3600.0 * now.hour + 60.0 * now.minute + now.second + (now.microsecond / 1000000.0) + 70.0
 		self.stopSec = self.startSec + 70.0
 		self.alarmActive = False
-		self.pwm = PwmOutput(True)
+		self.pwm = PwmOutput()
 		self.cancel = False
 		self.isRunning = False
 
@@ -102,7 +103,7 @@ class AlarmClock:
 			q += 24.0 * 3600.0
 		# Clamp value to 0..1
 		r = max(0.0, min(p/q, 1.0))
-		self.pwm.SetDutyCycle(r)
+		self.pwm.SetDutyCycle(r * r * r)
 
 	def __Worker(self):
 		cycleTimeSec = 1.0
@@ -121,7 +122,7 @@ class AlarmClock:
 				if abs(self.startSec - nowSec) <= cycleTimeSec/2.0:
 					self.alarmActive = True
 					self.__SetIntensityByTime(nowSec)
-			print(str(self))
+			#print((nowSec, str(self)))
 			time.sleep(cycleTimeSec)
 		return
 
@@ -131,7 +132,7 @@ class FormData:
 	def __init__(self):
 		self.alarmClock = AlarmClock()
 		self.musicEnabled = False
-		self.setButtons = { 'Off' : 0.0, '5%' : 0.05, '60%' : 0.6, 'Full' : 1.0 }
+		self.setButtons = { 'Off' : 0.0, '1%' : 0.01, '60%' : 0.6, 'Full' : 1.0 }
 
 	def __str__(self):
 		return 'FormData(alarmEnabled={0}, musicEnabled={1}, wakeupTime={2}, fadeDuration={3})'.format( \
@@ -161,6 +162,7 @@ class FormData:
 			self.alarmClock.SetTimings(startSec, stopSec)
 
 	def Render(self):
+		now = datetime.datetime.now()
 		startSec, stopSec = self.alarmClock.GetTimings()
 		wakeupTime = '{0:02.0f}:{1:02.0f}'.format(math.floor(stopSec / 3600.0), \
 			round(stopSec - 3600.0 * math.floor(stopSec / 3600.0)) / 60.0)
@@ -169,7 +171,7 @@ class FormData:
 			fadeDuration += 24.0 * 3600.0
 		fadeDuration = '{0:.0f}'.format(round(fadeDuration / 60.0))
 		return flask.render_template('form.html',
-			status = '{0:.0f}%'.format(100.0 * self.alarmClock.GetIntensity()),
+			status = '{0}, {1:.0f}%'.format(now.strftime("%H:%M"), 100.0 * self.alarmClock.GetIntensity()),
 			alarmEnabled = "checked" if self.alarmClock.GetEnabled() else "",
 			musicEnabled = "checked" if self.musicEnabled else "",
 			wakeupTime=wakeupTime, fadeDuration=fadeDuration)
