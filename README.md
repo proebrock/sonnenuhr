@@ -13,7 +13,7 @@ For this project we use the following material:
 
 This is the schematics:
 
-[Schematics](schematics.png)
+![Schematics](schematics.png)
 
 *R1: Optocoupler forward voltage 1.2V, forward current 20mA; R1=(3.3V-1.2V)/0.02A=105Ohm
 * R2/R3: Vgs(th)=2..4V; take at least double of that to open D-S; so lets pick R2=22kOhm, R3=15kOhm with U_R2=14.3V and U_R3=9.7V; I=24V/(22kOhm+15kOhm)=0.65mA; Max Current 50mA -> OK!
